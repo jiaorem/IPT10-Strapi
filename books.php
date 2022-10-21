@@ -1,35 +1,32 @@
 <?php
-
-include "vendor/autoload.php";
+require "vendor/autoload.php";
 use GuzzleHttp\Client;
 
 function getBooks() {
     $token = 'c643bd1bbe13eca61da7931184614d71e9e197c8d87bd86f2c7b435a717ab47e58ea2b707d4a226fc5349f521cafa07af3d019e8bd2c0ee61a4770e575aa0110241bd370e1a3894de3473138f498559c997e5c392fb4b797397c85a52f76f36a0542af63246865714be1eb62cc27ac09055c63c452aaa9d130d0d11b27132002';
-
-    $client = new Client([
+	$client = new Client([
         'base_uri' => 'http://localhost:1337/api/',
     ]);
 
     $headers = [
-    'Authorization' => 'Bearer' . $token,
-    'Accept'        => 'application/json',
+        'Authorization' => 'Bearer ' . $token,        
+        'Accept'        => 'application/json',
     ];
 
-    $response = $client->request('GET', 'books', [
+    $response = $client->request('GET', 'books?pagination[pageSize]=66', [
         'headers' => $headers
     ]);
 
     $body = $response->getBody();
-    $contents = json_decode($body);
-    return $contents;
+    $all_books = json_decode($body);
+    return $all_books;
 }
 
 $books = getBooks();
-//var_dump($books);
 ?>
-   
 
-   <!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -144,21 +141,19 @@ $(document).ready(function(){
 					</tr>
 				</thead>
 
-				<?php
-                $books = getBooks();
-                foreach($books->data as $book):
-                //$book = $bookData->attributes;
-                ?>
+               <?php 
+               foreach($books->data as $bookData){ 
+                $book = $bookData->attributes;?>
 				<tbody>
             <tr>
-                <th scope="row"><?php echo $book->id ?></th>
+                <th scope="row"><?php echo $bookData->id ?></th>
                 <th scope="row"><?php echo $book->name ?></th>
                 <th scope="row"><?php echo $book->author ?></th>
                 <th scope="row"><?php echo $book->category ?></th>
             </tr>
 				</tbody>
 
-				<?php endforeach; ?>
+				<?php }?>
 			</table>
 		</div>
 	</div>        
